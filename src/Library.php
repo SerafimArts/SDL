@@ -1,7 +1,7 @@
 <?php
 
 /**
- * This file is part of SDL package.
+ * This file is part of ffi-sdl package.
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -11,126 +11,166 @@ declare(strict_types=1);
 
 namespace Serafim\SDL;
 
-use Serafim\FFILoader\BitDepth;
+use Serafim\Version\Version as VersionInstance;
+use Serafim\Version\VersionInterface;
 use Serafim\FFILoader\Library as BaseLibrary;
-use Serafim\FFILoader\OperatingSystem;
 
 /**
- * Class Library
+ * @psalm-type SDLVersion = object { major: int, minor: int, patch: int }
  */
-class Library extends BaseLibrary
+final class Library extends BaseLibrary
 {
     /**
      * @var string
      */
-    protected const SDL_GET_VERSION = <<<'C'
+    public const DIRECTIVE_SDL_NO_PROTOTYPES = 'SDL_NO_PROTOTYPES';
+
+    /**
+     * @var string
+     */
+    private const BINARY_WIN64 = __DIR__ . '/../resources/bin/x64/SDL2.dll';
+
+    /**
+     * @var string
+     */
+    private const BINARY_WIN86 = __DIR__ . '/../resources/bin/x86/SDL2.dll';
+
+    /**
+     * @var string
+     */
+    private const BINARY_LINUX = 'libSDL2-2.0.so.0';
+
+    /**
+     * @var string
+     */
+    private const BINARY_DARWIN = 'libSDL2-2.0.0.dylib';
+
+    /**
+     * @var string
+     */
+    private const SDL_INCLUDE_DIR = __DIR__ . '/../resources/include';
+
+    /**
+     * @var string
+     * @lang C
+     */
+    private const SDL_GET_VERSION = <<<'clang'
         typedef struct SDL_Version
         {
             uint8_t major;
             uint8_t minor;
             uint8_t patch;
         } SDL_Version;
-        
+
         void SDL_GetVersion(SDL_Version * ver);
-    C;
+    clang;
 
     /**
-     * @var string
+     * @var VersionInterface|null
      */
-    private const LIBRARY_WIN64 = __DIR__ . '/../bin/x64/SDL2.dll';
+    private ?VersionInterface $version;
 
     /**
-     * @var string
+     * @param VersionInterface|null $version
      */
-    private const LIBRARY_WIN86 = __DIR__ . '/../bin/x86/SDL2.dll';
-
-    /**
-     * @var string
-     */
-    private const LIBRARY_LINUX = 'libSDL2-2.0.so.0';
-
-    /**
-     * @var string
-     */
-    private const LIBRARY_MAC = 'libSDL2-2.0.0.dylib';
-
-    /**
-     * @var string|null
-     */
-    private ?string $version = null;
+    public function __construct(VersionInterface $version = null)
+    {
+        $this->version = $version;
+    }
 
     /**
      * {@inheritDoc}
      */
     public function getName(): string
     {
-        return 'SDL';
+        return 'sdl';
+    }
+
+    /**
+     * @return \SplFileInfo
+     */
+    public function getHeaders(): \SplFileInfo
+    {
+        return new \SplFileInfo(self::SDL_INCLUDE_DIR . '/sdl.h');
+    }
+
+    /**
+     * @return VersionInterface
+     */
+    public function getVersion(): VersionInterface
+    {
+        return $this->version ??= $this->detectVersion($this->getBinary());
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getHeaders(): string
+    public function getBinary(): string
     {
-        return __DIR__ . '/../resources/sdl.h';
-    }
+        switch (\PHP_OS_FAMILY) {
+            case 'Windows':
+                return \PHP_INT_SIZE === 8 ? self::BINARY_WIN64 : self::BINARY_WIN86;
 
-    /**
-     * {@inheritDoc}
-     */
-    public function getVersion(string $library): string
-    {
-        if ($this->version === null) {
-            $ctx = \FFI::cdef(static::SDL_GET_VERSION, $library);
+            case 'Linux':
+                return self::BINARY_LINUX;
 
-            $ctx->SDL_GetVersion(\FFI::addr($ver = $ctx->new('SDL_Version')));
+            case 'Darwin':
+                return self::BINARY_DARWIN;
 
-            return $this->version = \sprintf('%d.%d.%d', $ver->major, $ver->minor, $ver->patch);
+            default:
+                throw new \LogicException('Can not load SDL library on your OS');
         }
-
-        return $this->version;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getLibrary(OperatingSystem $os, BitDepth $bits): ?string
+    public function getDirectives(): iterable
     {
-        switch (true) {
-            case $os->isWindows() && $bits->is64BitDepth():
-                return self::LIBRARY_WIN64;
+        yield 'SDL_PREREQ' => function ($major, $minor, $patch): string {
+            $needle = new VersionInstance((int)$major, (int)$minor, (int)$patch);
 
-            case $os->isWindows() && $bits->is32BitDepth():
-                return self::LIBRARY_WIN86;
-
-            case $os->isLinux():
-                return self::LIBRARY_LINUX;
-
-            case $os->isMac():
-                return self::LIBRARY_MAC;
-        }
-
-        return null;
+            return $this->getVersion()->gte($needle) ? '1' : '0';
+        };
     }
 
     /**
-     * @param OperatingSystem $os
-     * @param BitDepth $bits
-     * @return string|null
+     * @param string $binary
+     * @return VersionInterface
      */
-    public function suggest(OperatingSystem $os, BitDepth $bits): ?string
+    private function detectVersion(string $binary): VersionInterface
     {
-        switch (true) {
-            case $os->isWindows();
-                return 'Try to open issue on GitHub: https://github.com/SerafimArts/ffi-sdl/issues';
+        /** @var object $ctx */
+        $ctx = \FFI::cdef(self::SDL_GET_VERSION, $binary);
 
-            case $os->isLinux():
-                return 'Dependency installation required: "sudo apt install libsdl2-2.0-0 -y"';
+        /** @psalm-var SDLVersion $version */
+        $version = $ctx->new('SDL_Version');
 
-            case $os->isMac():
+        $ctx->SDL_GetVersion(\FFI::addr($version));
+
+        return new VersionInstance(
+            $version->major,
+            $version->minor,
+            $version->patch
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function getSuggestion(): string
+    {
+        switch (\PHP_OS_FAMILY) {
+            case 'Windows';
+                return 'Please open issue on GitHub: https://github.com/SerafimArts/ffi-sdl/issues';
+
+            case 'Linux':
+                return ' Dependency installation required: "sudo apt install libsdl2-2.0-0 -y"';
+
+            case 'Darwin':
                 return 'Dependency installation required: "brew install sdl2"';
         }
 
-        return null;
+        return parent::getSuggestion();
     }
 }

@@ -11,9 +11,6 @@ declare(strict_types=1);
 
 namespace Serafim\SDL\Kernel;
 
-/**
- * Interface EnumsInterface
- */
 interface Enums extends
     Boolean,
     InitFlags,

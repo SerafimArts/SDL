@@ -1,7 +1,4 @@
 
-#define FFI_SCOPE "sdl"
-
-#include "sdl-types.h"
 
 // =====================================================================================================================
 //  Function Definitions
@@ -455,14 +452,14 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-1-released/40
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.1
+#if SDL_PREREQ(2, 0, 1)
     extern char* SDL_GetBasePath(void);
     extern char* SDL_GetPrefPath(const char* org, const char* app);
     extern int SDL_UpdateYUVTexture(SDL_Texture* texture, const SDL_Rect* rect, const Uint8* Yplane, int Ypitch, const Uint8* Uplane, int Upitch, const Uint8* Vplane, int Vpitch);
     extern int SDL_GetSystemRAM(void);
     extern void SDL_GL_GetDrawableSize(SDL_Window* window, int* w, int* h);
 
-    #ifdef __windows__
+    #if __PHP_OS_FAMILY__ == "Windows"
         extern int SDL_Direct3D9GetAdapterIndex(int displayIndex);
         extern IDirect3DDevice9* SDL_RenderGetD3D9Device(SDL_Renderer* renderer);
     #endif
@@ -474,7 +471,7 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-2-released/41
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.2
+#if SDL_PREREQ(2, 0, 2)
     extern void SDL_GL_ResetAttributes(void);
     // mapped from SDL_GameControllerAddMappingsFromFile
     extern int SDL_GameControllerAddMappingsFromRW(SDL_RWops* rw, int freerw);
@@ -491,7 +488,7 @@ extern void SDL_Quit(void);
     extern void* SDL_AtomicSetPtr(void **a, void* v);
     extern void* SDL_AtomicGetPtr(void **a);
 
-    #ifdef __windows__
+    #if __PHP_OS_FAMILY__ == "Windows"
         extern int SDL_RegisterApp(char* name, Uint32 style, void* hInst);
         extern void SDL_UnregisterApp(void);
 
@@ -506,7 +503,7 @@ extern void SDL_Quit(void);
 //   FIXME Possible errors line "C function not found"
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.4
+#if SDL_PREREQ(2, 0, 4)
     extern int SDL_QueueAudio(SDL_AudioDeviceID dev, const void* data, Uint32 len);
     extern Uint32 SDL_GetQueuedAudioSize(SDL_AudioDeviceID dev);
     extern void SDL_ClearQueuedAudio(SDL_AudioDeviceID dev);
@@ -522,7 +519,7 @@ extern void SDL_Quit(void);
     extern SDL_GameController* SDL_GameControllerFromInstanceID(SDL_JoystickID joyid);
     extern int SDL_RenderIsClipEnabled(SDL_Renderer* renderer);
 
-    #ifdef __windows__
+    #if __PHP_OS_FAMILY__ == "Windows"
         extern void SDL_SetWindowsMessageHook(SDL_WindowsMessageHook callback, void* userdata);
     #endif
 #endif
@@ -533,7 +530,7 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-5-released/42
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.5
+#if SDL_PREREQ(2, 0, 5)
     extern Uint32 SDL_DequeueAudio(SDL_AudioDeviceID dev, void* data, Uint32 len);
     extern int SDL_GetHintBoolean(const char* name, int default_value);
     extern int SDL_RenderSetIntegerScale(SDL_Renderer* renderer, int enable);
@@ -558,7 +555,7 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-6-prerelease/23024
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.6
+#if SDL_PREREQ(2, 0, 6)
     // TODO SDL_Vulkan_XXX is the platform-specific code.
     // TODO Perhaps this can cause errors on Linux or MacOS.
     // TODO Need to check =)
@@ -607,7 +604,7 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-7-released/23279
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.7
+#if SDL_PREREQ(2, 0, 7)
     extern SDL_AudioStream* SDL_NewAudioStream(const SDL_AudioFormat src_format, const Uint8 src_channels, const int src_rate, const SDL_AudioFormat dst_format, const Uint8 dst_channels, const int dst_rate);
     extern int SDL_AudioStreamPut(SDL_AudioStream* stream, const void* buf, int len);
     extern int SDL_AudioStreamGet(SDL_AudioStream* stream, void* buf, int len);
@@ -630,7 +627,7 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-8-released/23957
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.8
+#if SDL_PREREQ(2, 0, 8)
     extern void SDL_SetYUVConversionMode(SDL_YUV_CONVERSION_MODE mode);
     extern SDL_YUV_CONVERSION_MODE SDL_GetYUVConversionMode(void);
 
@@ -642,9 +639,9 @@ extern void SDL_Quit(void);
     // FIXME Possible errors line "C function not found"
     extern SDL_YUV_CONVERSION_MODE SDL_GetYUVConversionModeForResolution(int width, int height);
 
-    #ifdef __android__
-        extern int SDL_IsAndroidTV(void);
-    #endif
+    // #ifdef __ANDROID__
+    //     extern int SDL_IsAndroidTV(void);
+    // #endif
 #endif
 
 // =====================================================================================================================
@@ -653,7 +650,7 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-9-released/25228
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.9
+#if SDL_PREREQ(2, 0, 9)
     // New Sensor API: Methods
     extern int SDL_NumSensors(void);
     extern const char* SDL_SensorGetDeviceName(int device_index);
@@ -686,7 +683,7 @@ extern void SDL_Quit(void);
     extern int SDL_HasAVX512F(void);
     extern int SDL_IsTablet(void);
 
-    #ifdef __linux__
+    #if __PHP_OS_FAMILY__ == "Linux"
         extern int SDL_LinuxSetThreadPriority(Sint64 threadID, int priority);
     #endif
 
@@ -699,7 +696,7 @@ extern void SDL_Quit(void);
 //   SDL >= 2.0.10
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.10
+#if SDL_PREREQ(2, 0, 10)
     extern size_t SDL_SIMDGetAlignment(void);
     extern void* SDL_SIMDAlloc(const size_t len);
     extern void SDL_SIMDFree(void* ptr);
@@ -737,7 +734,7 @@ extern void SDL_Quit(void);
 //   https://discourse.libsdl.org/t/sdl-2-0-12-released/27318
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.12
+#if SDL_PREREQ(2, 0, 12)
     extern int SDL_GetTextureScaleMode(SDL_Texture* texture, SDL_ScaleMode* scaleMode);
     extern int SDL_SetTextureScaleMode(SDL_Texture* texture, SDL_ScaleMode scaleMode);
     extern int SDL_LockTextureToSurface(SDL_Texture* texture, const SDL_Rect* rect, SDL_Surface** surface);
@@ -753,12 +750,12 @@ extern void SDL_Quit(void);
 
     extern int SDL_HasARMSIMD(void);
 
-    #ifdef __osx__
+    #if __PHP_OS_FAMILY__ == "Darwin"
         extern SDL_MetalView SDL_Metal_CreateView(SDL_Window* window);
         extern void SDL_Metal_DestroyView(SDL_MetalView view);
     #endif
 
-    #ifdef __android__
-        extern int SDL_GetAndroidSDKVersion(void);
-    #endif
+    // #ifdef __ANDROID__
+    //     extern int SDL_GetAndroidSDKVersion(void);
+    // #endif
 #endif

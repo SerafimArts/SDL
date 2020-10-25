@@ -56,18 +56,16 @@ The library API completely supports and repeats the analogue in the C language.
 - API not yet fully documented and may not work in places.
 - Low level system functions (such as `SDL_malloc` or `SDL_memcpy`) have been removed.
 
-## Example
+## Usage
 
 ```php
 use Serafim\SDL\SDL;
 use Serafim\SDL\Event;
 use Serafim\SDL\Kernel\Event\Type;
 
-$sdl = new SDL();
+SDL::init(SDL::SDL_INIT_VIDEO);
 
-$sdl->SDL_Init(SDL::SDL_INIT_VIDEO);
-
-$window = $sdl->SDL_CreateWindow( 
+$window = SDL::createWindow( 
     'An SDL2 window',
     SDL::SDL_WINDOWPOS_UNDEFINED,
     SDL::SDL_WINDOWPOS_UNDEFINED, 
@@ -77,19 +75,46 @@ $window = $sdl->SDL_CreateWindow(
 );
 
 if ($window === null) {
-    throw new \Exception(sprintf('Could not create window: %s', $sdl->SDL_GetError()));
+    throw new \Exception(sprintf('Could not create window: %s', SDL::getError()));
 }
 
-$event = $sdl->new(Event::class);
+$event = SDL::new(Event::class);
 $running = true;
 
 while ($running) {
-    $sdl->SDL_PollEvent(SDL::addr($event));
+    SDL::pollEvent(ptr($event));
+    
     if ($event->type === Type::SDL_QUIT) {
         $running = false;
     }
 }
 
-$sdl->SDL_DestroyWindow($window);
-$sdl->SDL_Quit();
+SDL::destroyWindow($window);
+SDL::quit();
+```
+
+## Upgrade Guide
+
+### Upgrading To 2.x From 1.x
+
+1) The old format was to create an SDL object to access library methods. This is no longer required in the new 
+version of the library.
+2) All method prefixes `SDL_` have been removed.
+3) All methods now compatible with the `PSR` specification and start with a small letter.
+
+```php
+// Before: serafim/ffi-sdl ^1.x
+
+$sdl = new SDL();
+$sdl->SDL_Init();
+
+$window = $sdl->SDL_CreateWindow(...);
+```
+
+```php
+// After: serafim/ffi-sdl ^2.x
+
+SDL::init();
+
+$window = SDL::createWindow(...);
 ```

@@ -1382,7 +1382,7 @@ typedef struct SDL_TouchFingerEvent {
   float dx;
   float dy;
   float pressure;
-  #if __sdl_version__ >= 2.0.12
+  #if SDL_PREREQ(2, 0, 12)
       Uint32 windowID;
   #endif
 } SDL_TouchFingerEvent;
@@ -1766,8 +1766,8 @@ typedef void (* SDL_HintCallback)(void* userdata, const char* name, const char* 
 //   https://discourse.libsdl.org/t/sdl-2-0-1-released/40
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.1
-    #ifdef __windows__
+#if SDL_PREREQ(2, 0, 1)
+    #if __PHP_OS_FAMILY__ == "Windows"
         typedef struct IDirect3DDevice9 IDirect3DDevice9;
     #endif
 #endif
@@ -1779,8 +1779,8 @@ typedef void (* SDL_HintCallback)(void* userdata, const char* name, const char* 
 //   FIXME Possible errors line "C function not found"
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.4
-    #ifdef __windows__
+#if SDL_PREREQ(2, 0, 4)
+    #if __PHP_OS_FAMILY__ == "Windows"
         typedef void (* SDL_WindowsMessageHook)(void* userdata, void* hWnd, unsigned int message, Uint64 wParam, Sint64 lParam);
     #endif
 #endif
@@ -1791,7 +1791,7 @@ typedef void (* SDL_HintCallback)(void* userdata, const char* name, const char* 
 //   https://discourse.libsdl.org/t/sdl-2-0-6-prerelease/23024
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.6
+#if SDL_PREREQ(2, 0, 6)
     typedef void* VkInstance;
     typedef VkInstance SDL_VulkanInstance;
 
@@ -1805,7 +1805,7 @@ typedef void (* SDL_HintCallback)(void* userdata, const char* name, const char* 
 //   https://discourse.libsdl.org/t/sdl-2-0-7-released/23279
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.7
+#if SDL_PREREQ(2, 0, 7)
     typedef void *(*SDL_MallocFunc)(size_t size);
     typedef void *(*SDL_CallocFunc)(size_t nmemb, size_t size);
     typedef void *(*SDL_ReallocFunc)(void* mem, size_t size);
@@ -1818,7 +1818,7 @@ typedef void (* SDL_HintCallback)(void* userdata, const char* name, const char* 
 //   https://discourse.libsdl.org/t/sdl-2-0-9-released/25228
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.9
+#if SDL_PREREQ(2, 0, 9)
     // New Sensor API: Defines
     typedef Sint32 SDL_SensorID;
     struct _SDL_Sensor;
@@ -1837,7 +1837,7 @@ typedef void (* SDL_HintCallback)(void* userdata, const char* name, const char* 
 //   https://discourse.libsdl.org/t/sdl-2-0-12-released/27318
 // =====================================================================================================================
 
-#if __sdl_version__ >= 2.0.12
+#if SDL_PREREQ(2, 0, 12)
     typedef enum {
         SDL_ScaleModeNearest,
         SDL_ScaleModeLinear,
@@ -1853,7 +1853,7 @@ typedef void (* SDL_HintCallback)(void* userdata, const char* name, const char* 
         SDL_CONTROLLER_TYPE_NINTENDO_SWITCH_PRO
     } SDL_GameControllerType;
 
-    #ifdef __osx__
+    #if __PHP_OS_FAMILY__ == "Darwin"
         typedef void *SDL_MetalView;
     #endif
 #endif

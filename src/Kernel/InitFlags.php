@@ -12,7 +12,6 @@ declare(strict_types=1);
 namespace Serafim\SDL\Kernel;
 
 /**
- * @see NativeApi::SDL_Init
  * @see https://wiki.libsdl.org/SDL_Init
  */
 interface InitFlags

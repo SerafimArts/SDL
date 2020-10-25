@@ -26,31 +26,40 @@
     "require": {
         "php": ">=7.4",
         "ext-ffi": "*",
-        "serafim/ffi-loader": "~1.0.3"
+        "serafim/flux": "^1.0",
+        "serafim/ffi-loader": "^2.0",
+        "symfony/polyfill-php80": "^1.18"
     },
     "autoload": {
         "psr-4": {
             "Serafim\\SDL\\": "src"
-        }
+        },
+        "files": [
+            "src/bootstrap.php"
+        ]
     },
     "require-dev": {
-        "serafim/ffi-ide-helper": "^1.0",
-        "phpunit/phpunit": "~9.0",
-        "symfony/var-dumper": "~5.0"
+        "phpunit/phpunit": "^9.0",
+        "symfony/var-dumper": "^5.0",
+        "vimeo/psalm": "^3.17",
+        "serafim/ffi-ide-helper": "^1.0"
     },
     "autoload-dev": {
         "psr-4": {
             "Serafim\\SDL\\Tests\\": "tests"
         }
     },
+    "scripts": {
+        "check": "psalm"
+    },
     "config": {
         "sort-packages": true
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
     "extra": {
         "branch-alias": {
             "dev-master": "1.0.x-dev"
         }
-    }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
 }
