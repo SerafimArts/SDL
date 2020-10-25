@@ -28,12 +28,17 @@ final class Library extends BaseLibrary
     /**
      * @var string
      */
-    private const BINARY_WIN64 = __DIR__ . '/../resources/bin/x64/SDL2.dll';
+    private const SDL_RESOURCES = __DIR__ . '/../resources';
 
     /**
      * @var string
      */
-    private const BINARY_WIN86 = __DIR__ . '/../resources/bin/x86/SDL2.dll';
+    private const BINARY_WIN64 = self::SDL_RESOURCES . '/bin/x64/SDL2.dll';
+
+    /**
+     * @var string
+     */
+    private const BINARY_WIN86 = self::SDL_RESOURCES . '/bin/x86/SDL2.dll';
 
     /**
      * @var string
@@ -48,7 +53,7 @@ final class Library extends BaseLibrary
     /**
      * @var string
      */
-    private const SDL_INCLUDE_DIR = __DIR__ . '/../resources/include';
+    private const SDL_INCLUDE = self::SDL_RESOURCES . '/include/sdl.h';
 
     /**
      * @var string
@@ -91,7 +96,7 @@ final class Library extends BaseLibrary
      */
     public function getHeaders(): \SplFileInfo
     {
-        return new \SplFileInfo(self::SDL_INCLUDE_DIR . '/sdl.h');
+        return new \SplFileInfo(self::SDL_INCLUDE);
     }
 
     /**
@@ -161,7 +166,7 @@ final class Library extends BaseLibrary
     public function getSuggestion(): string
     {
         switch (\PHP_OS_FAMILY) {
-            case 'Windows';
+            case 'Windows':
                 return 'Please open issue on GitHub: https://github.com/SerafimArts/ffi-sdl/issues';
 
             case 'Linux':
