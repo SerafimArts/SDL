@@ -83,14 +83,16 @@ final class SDL implements Enums
     private const STRUCT_PREFIX = 'SDL_';
 
     /**
+     * @readonly
      * @var \FFI|object
      */
-    private static \FFI $ffi;
+    public static \FFI $ffi;
 
     /**
+     * @readonly
      * @var VersionInterface
      */
-    private static VersionInterface $version;
+    public static VersionInterface $version;
 
     /**
      * The SDL's constructor should always be private to prevent direct
@@ -98,15 +100,6 @@ final class SDL implements Enums
      */
     private function __construct()
     {
-    }
-
-    /**
-     * @param \FFI $ffi
-     * @param VersionInterface $version
-     */
-    public static function load(\FFI $ffi, VersionInterface $version): void
-    {
-        [self::$ffi, self::$version] = [$ffi, $version];
     }
 
     /**

@@ -27,7 +27,7 @@
         "php": ">=7.4",
         "ext-ffi": "*",
         "serafim/flux": "^1.0",
-        "serafim/ffi-loader": "^2.0",
+        "serafim/ffi-loader": "^2.2",
         "symfony/polyfill-php80": "^1.18"
     },
     "autoload": {
