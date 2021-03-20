@@ -1,5 +1,8 @@
 # FFI SDL Bindings
 
+> Note: This package has been archived, please use https://github.com/BicEngine/SDL instead
+
+
 This is a SDL bindings for PHP
 
 - [System Requirements](#requirements)
